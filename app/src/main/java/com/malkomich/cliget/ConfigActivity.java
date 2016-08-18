@@ -2,8 +2,10 @@ package com.malkomich.cliget;
 
 
 import android.annotation.TargetApi;
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -13,10 +15,10 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
@@ -34,6 +36,18 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class ConfigActivity extends AppCompatPreferenceActivity {
+
+    private static final String PREFS_LOCATION = ".ConfigActivity";
+    private static final String PREF_CITY = "city";
+
+    int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+
+    static String loadWeather(Context context, int appWidgetId) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_LOCATION, 0);
+        String titleValue = prefs.getString(PREF_CITY, null);
+        return titleValue;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
