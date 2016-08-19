@@ -20,6 +20,7 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 
 import java.util.List;
@@ -37,13 +38,16 @@ import java.util.List;
  */
 public class ConfigActivity extends AppCompatPreferenceActivity {
 
-    private static final String PREFS_LOCATION = ".ConfigActivity";
-    private static final String PREF_CITY = "city";
+    private static final String TAG = ConfigActivity.class.getName();
+
+    private static final String PREFS = ".ConfigActivity";
+    private static final String PREF_CITY = "pref_city";
+    private static final String PREF_SYNC_FREQ = "sync_frequency";
 
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
     static String loadCity(Context context, int appWidgetId) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS_LOCATION, 0);
+        SharedPreferences prefs = context.getSharedPreferences(PREFS, 0);
         String cityValue = prefs.getString(PREF_CITY, "Valladolid");
 
         return cityValue;
@@ -184,7 +188,9 @@ public class ConfigActivity extends AppCompatPreferenceActivity {
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class GeneralPreferenceFragment extends PreferenceFragment {
+    public static class GeneralPreferenceFragment extends PreferenceFragment
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -195,8 +201,19 @@ public class ConfigActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+            bindPreferenceSummaryToValue(findPreference(PREF_CITY));
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onPause() {
+            getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+            super.onPause();
         }
 
         @Override
@@ -207,6 +224,15 @@ public class ConfigActivity extends AppCompatPreferenceActivity {
                 return true;
             }
             return super.onOptionsItemSelected(item);
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (key.equals(PREF_CITY)) {
+                Preference connectionPref = findPreference(key);
+                String city = sharedPreferences.getString(key, "");
+                Log.d(TAG, "New city: " + city);
+            }
         }
     }
 
@@ -245,7 +271,9 @@ public class ConfigActivity extends AppCompatPreferenceActivity {
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class DataSyncPreferenceFragment extends PreferenceFragment {
+    public static class DataSyncPreferenceFragment extends PreferenceFragment
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -256,7 +284,7 @@ public class ConfigActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+            bindPreferenceSummaryToValue(findPreference(PREF_SYNC_FREQ));
         }
 
         @Override
@@ -267,6 +295,15 @@ public class ConfigActivity extends AppCompatPreferenceActivity {
                 return true;
             }
             return super.onOptionsItemSelected(item);
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (key.equals(PREF_SYNC_FREQ)) {
+                Preference connectionPref = findPreference(key);
+                int minutes = Integer.parseInt(sharedPreferences.getString(key, "-1"));
+                Log.d(TAG, "New update interval: " + minutes + " minutes");
+            }
         }
     }
 }

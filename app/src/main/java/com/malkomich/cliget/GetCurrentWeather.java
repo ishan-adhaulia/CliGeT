@@ -44,7 +44,7 @@ public class GetCurrentWeather extends AsyncTask<String, Integer, CurrentWeather
 
         String cityName = data.getCity().getName();
 
-        String text = cityName + ": " + weather.getTemp().getCurrentTemp();
+        String text = weather.getTemp().getCurrentTemp(Weather.CELSIUS) + "º";
 
         views.setTextViewText(R.id.appwidget_text, text);
 
