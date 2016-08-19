@@ -22,6 +22,11 @@ import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
+import com.github.malkomich.climet.ClimeT;
+import com.github.malkomich.climet.domain.CurrentWeatherData;
+import com.github.malkomich.climet.domain.Weather;
+import com.github.malkomich.climet.exceptions.CityNotFoundException;
+
 import java.util.List;
 
 /**
@@ -42,10 +47,11 @@ public class ConfigActivity extends AppCompatPreferenceActivity {
 
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
-    static String loadWeather(Context context, int appWidgetId) {
+    static String loadCity(Context context, int appWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_LOCATION, 0);
-        String titleValue = prefs.getString(PREF_CITY, null);
-        return titleValue;
+        String cityValue = prefs.getString(PREF_CITY, "Valladolid");
+
+        return cityValue;
     }
 
     @Override

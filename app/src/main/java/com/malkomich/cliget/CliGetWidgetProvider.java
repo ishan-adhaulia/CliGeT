@@ -3,6 +3,7 @@ package com.malkomich.cliget;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 /**
@@ -11,24 +12,22 @@ import android.widget.RemoteViews;
  */
 public class CliGetWidgetProvider extends AppWidgetProvider {
 
+    private static final String TAG = CliGetWidgetProvider.class.getName();
+
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        CharSequence widgetText = ConfigActivity.loadWeather(context, appWidgetId);
-        // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-        if(widgetText != null) {
-            views.setTextViewText(R.id.appwidget_text, widgetText);
-        }
+        String cityValue = ConfigActivity.loadCity(context, appWidgetId);
 
-        // Instruct the widget manager to update the widget
-        appWidgetManager.updateAppWidget(appWidgetId, views);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+        new GetCurrentWeather(appWidgetManager, views, appWidgetId).execute(cityValue);
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
+            Log.d(TAG, "onUpdate widget " + appWidgetId);
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
     }
