@@ -22,11 +22,6 @@ import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
-import com.github.malkomich.climet.ClimeT;
-import com.github.malkomich.climet.domain.CurrentWeatherData;
-import com.github.malkomich.climet.domain.Weather;
-import com.github.malkomich.climet.exceptions.CityNotFoundException;
-
 import java.util.List;
 
 /**
@@ -86,7 +81,7 @@ public class ConfigActivity extends AppCompatPreferenceActivity {
      */
     private static boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+            & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
 
     /**
@@ -102,53 +97,55 @@ public class ConfigActivity extends AppCompatPreferenceActivity {
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
+    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener =
+        new Preference.OnPreferenceChangeListener() {
 
-            if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object value) {
+                String stringValue = value.toString();
 
-                // Set the summary to reflect the new value.
-                preference.setSummary(
+                if (preference instanceof ListPreference) {
+                    // For list preferences, look up the correct display value in
+                    // the preference's 'entries' list.
+                    ListPreference listPreference = (ListPreference) preference;
+                    int index = listPreference.findIndexOfValue(stringValue);
+
+                    // Set the summary to reflect the new value.
+                    preference.setSummary(
                         index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
+                            ? listPreference.getEntries()[index]
+                            : null);
 
-            } else if (preference instanceof RingtonePreference) {
-                // For ringtone preferences, look up the correct display value
-                // using RingtoneManager.
-                if (TextUtils.isEmpty(stringValue)) {
-                    // Empty values correspond to 'silent' (no ringtone).
-                    preference.setSummary(R.string.pref_ringtone_silent);
+                } else if (preference instanceof RingtonePreference) {
+                    // For ringtone preferences, look up the correct display value
+                    // using RingtoneManager.
+                    if (TextUtils.isEmpty(stringValue)) {
+                        // Empty values correspond to 'silent' (no ringtone).
+                        preference.setSummary(R.string.pref_ringtone_silent);
 
-                } else {
-                    Ringtone ringtone = RingtoneManager.getRingtone(
+                    } else {
+                        Ringtone ringtone = RingtoneManager.getRingtone(
                             preference.getContext(), Uri.parse(stringValue));
 
-                    if (ringtone == null) {
-                        // Clear the summary if there was a lookup error.
-                        preference.setSummary(null);
-                    } else {
-                        // Set the summary to reflect the new ringtone display
-                        // name.
-                        String name = ringtone.getTitle(preference.getContext());
-                        preference.setSummary(name);
+                        if (ringtone == null) {
+                            // Clear the summary if there was a lookup error.
+                            preference.setSummary(null);
+                        } else {
+                            // Set the summary to reflect the new ringtone display
+                            // name.
+                            String name = ringtone.getTitle(preference.getContext());
+                            preference.setSummary(name);
+                        }
                     }
-                }
 
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
+                } else {
+                    // For all other preferences, set the summary to the value's
+                    // simple string representation.
+                    preference.setSummary(stringValue);
+                }
+                return true;
             }
-            return true;
-        }
-    };
+        };
 
     /**
      * Binds a preference's summary to its value. More specifically, when the
@@ -166,9 +163,9 @@ public class ConfigActivity extends AppCompatPreferenceActivity {
         // Trigger the listener immediately with the preference's
         // current value.
         sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
+            PreferenceManager
+                .getDefaultSharedPreferences(preference.getContext())
+                .getString(preference.getKey(), ""));
     }
 
     /**
@@ -177,9 +174,9 @@ public class ConfigActivity extends AppCompatPreferenceActivity {
      */
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
-                || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
-                || NotificationPreferenceFragment.class.getName().equals(fragmentName);
+            || GeneralPreferenceFragment.class.getName().equals(fragmentName)
+            || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
+            || NotificationPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     /**
